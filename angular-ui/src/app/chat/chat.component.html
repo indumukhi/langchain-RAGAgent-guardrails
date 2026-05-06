@@ -1,0 +1,61 @@
+<div class="chat-container">
+  <header class="chat-header">
+    <div class="header-title">
+      <h1>AI Assistant</h1>
+      <span class="guardrails-badge">Guardrails Active</span>
+    </div>
+    <p>Powered by LangChain · OpenAI · Pinecone · Safety Guardrails</p>
+  </header>
+
+  <section class="message-list" #messageList>
+    <div *ngIf="messages.length === 0" class="empty-state">
+      <div class="empty-icon">🛡️</div>
+      <p>Ask me anything — I can search documents or do calculations.</p>
+      <p class="empty-hint">All requests are protected by safety guardrails.</p>
+    </div>
+
+    <div
+      *ngFor="let msg of messages"
+      class="message"
+      [ngClass]="msg.role === 'user' ? 'message--user' : 'message--assistant'"
+    >
+      <div class="message__bubble">{{ msg.text }}</div>
+
+      <!-- Guardrail warnings shown under assistant messages -->
+      <div *ngIf="hasWarnings(msg)" class="guardrail-warnings">
+        <div class="guardrail-warnings__header">
+          <span class="warning-icon">⚠️</span> Safety notices
+        </div>
+        <ul>
+          <li *ngFor="let w of msg.warnings">{{ w }}</li>
+        </ul>
+      </div>
+
+      <span class="message__time">{{ msg.timestamp | date: 'HH:mm' }}</span>
+    </div>
+
+    <div *ngIf="loading" class="message message--assistant">
+      <div class="message__bubble typing-indicator">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Error bar: shown for guardrail blocks and network errors -->
+  <div *ngIf="errorMessage" class="error-bar">
+    <span class="error-icon">🚫</span> {{ errorMessage }}
+  </div>
+
+  <footer class="chat-input-area">
+    <textarea
+      [(ngModel)]="userInput"
+      (keydown)="onEnter($event)"
+      placeholder="Type your question and press Enter…"
+      rows="1"
+      [disabled]="loading"
+    ></textarea>
+    <button (click)="send()" [disabled]="loading || !userInput.trim()">
+      {{ loading ? '…' : 'Send' }}
+    </button>
+  </footer>
+</div>

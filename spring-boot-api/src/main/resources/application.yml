@@ -1,0 +1,20 @@
+server:
+  port: 8080
+
+agent:
+  fastapi-url: http://localhost:8000
+
+spring:
+  application:
+    name: ai-gateway-api
+  mvc:
+    cors:
+      allowed-origins: "http://localhost:4200"
+      allowed-methods: GET,POST,OPTIONS
+      allowed-headers: "*"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
